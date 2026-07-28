@@ -65,7 +65,7 @@ export function AIProviderConfigurationForm({
   const isCurrentConfigured = connectedProvider === provider && isConfigured;
 
   useEffect(() => {
-    if (isModal) {
+    if (isModal || !connectedProvider) {
       return;
     }
     setProvider(connectedProvider);
@@ -134,6 +134,8 @@ export function AIProviderConfigurationForm({
           icon: "warning",
           toastColor: "feedback-negative",
         });
+      } else {
+        setProvider(undefined);
       }
     } catch (error) {
       const message = getErrorMessage(

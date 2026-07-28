@@ -255,6 +255,7 @@ export type GdrivePayload = {
 const tokenStatusFeatures = [
   "advanced-config",
   "advanced-permissions",
+  "attached-dwh",
   "audit-app",
   "cache-granular-controls",
   "collection-cleanup",
@@ -371,6 +372,7 @@ export const tokenFeatures = [
   "etl_connections_pg",
   "table_data_editing",
   "remote_sync",
+  "data-apps",
   "dependencies",
   "schema-viewer",
   "semantic_search",
@@ -383,7 +385,6 @@ export const tokenFeatures = [
   "writable_connection",
   "admin_security_center",
   "ai_controls",
-  "workspaces",
 ] as const;
 
 export type TokenFeature = (typeof tokenFeatures)[number];

@@ -144,6 +144,7 @@ export const createMockTokenFeatures = (
   table_data_editing: false,
   semantic_search: false,
   remote_sync: false,
+  "data-apps": false,
   "transforms-basic": false,
   "transforms-python": false,
   library: false,
@@ -153,7 +154,6 @@ export const createMockTokenFeatures = (
   writable_connection: false,
   admin_security_center: false,
   ai_controls: false,
-  workspaces: false,
   ...opts,
 });
 
