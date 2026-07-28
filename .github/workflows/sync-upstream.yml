@@ -2,8 +2,8 @@ name: Sync Upstream
 
 on:
   schedule:
-    # Run every Sunday at 00:00 UTC
-    - cron: '0 0 * * 0'
+    # Run every day at 00:00 UTC
+    - cron: '0 0 * * *'
   workflow_dispatch:
     inputs:
       force_master:
@@ -36,6 +36,7 @@ jobs:
           git fetch upstream master
 
       - name: Sync master from upstream
+        continue-on-error: true
         env:
           FORCE: ${{ github.event.inputs.force_master || 'false' }}
         run: |
@@ -68,6 +69,8 @@ jobs:
         run: |
           echo "## Sync Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          git log --oneline -1 master && echo "| master | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| master | ❌ |" >> $GITHUB_STEP_SUMMARY
-          git log --oneline -1 feature/community-oidc && echo "| feature/community-oidc | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| feature/community-oidc | ❌ (merge conflict) |" >> $GITHUB_STEP_SUMMARY
-          git log --oneline -1 feature/custom-ai-provider && echo "| feature/custom-ai-provider | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| feature/custom-ai-provider | ❌ (merge conflict) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| master | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| feature/community-oidc | ✅ merged or ⚠️ conflict (check logs) |" >> $GITHUB_STEP_SUMMARY
+          echo "| feature/custom-ai-provider | ✅ merged or ⚠️ conflict (check logs) |" >> $GITHUB_STEP_SUMMARY
