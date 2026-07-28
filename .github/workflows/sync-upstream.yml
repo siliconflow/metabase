@@ -5,6 +5,15 @@ on:
     # Run every Sunday at 00:00 UTC
     - cron: '0 0 * * 0'
   workflow_dispatch:
+    inputs:
+      force_master:
+        description: "Force-push master from upstream (overwrites fork-only commits)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
 
 jobs:
   sync:
@@ -26,13 +35,39 @@ jobs:
           git remote add upstream https://github.com/metabase/metabase.git || true
           git fetch upstream master
 
-      - name: Merge upstream changes
-        run: |
-          git checkout main
-          git merge upstream/master --no-edit || true
-
-      - name: Push changes
-        run: |
-          git push origin main
+      - name: Sync master from upstream
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCE: ${{ github.event.inputs.force_master || 'false' }}
+        run: |
+          git checkout master
+          if [ "$FORCE" = "true" ]; then
+            echo "⚠️ Force-syncing master from upstream"
+            git reset --hard upstream/master
+            git push origin master --force
+          else
+            git merge upstream/master --no-edit
+            git push origin master
+          fi
+
+      - name: Sync feature/community-oidc
+        continue-on-error: true
+        run: |
+          git checkout feature/community-oidc
+          git merge upstream/master --no-edit
+          git push origin feature/community-oidc
+
+      - name: Sync feature/custom-ai-provider
+        continue-on-error: true
+        run: |
+          git checkout feature/custom-ai-provider
+          git merge upstream/master --no-edit
+          git push origin feature/custom-ai-provider
+
+      - name: Report sync status
+        if: always()
+        run: |
+          echo "## Sync Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          git log --oneline -1 master && echo "| master | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| master | ❌ |" >> $GITHUB_STEP_SUMMARY
+          git log --oneline -1 feature/community-oidc && echo "| feature/community-oidc | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| feature/community-oidc | ❌ (merge conflict) |" >> $GITHUB_STEP_SUMMARY
+          git log --oneline -1 feature/custom-ai-provider && echo "| feature/custom-ai-provider | ✅ |" >> $GITHUB_STEP_SUMMARY || echo "| feature/custom-ai-provider | ❌ (merge conflict) |" >> $GITHUB_STEP_SUMMARY
