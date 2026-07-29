@@ -25,6 +25,7 @@ jobs:
         with:
           # Dockerfile build pulls version from git tags/history
           fetch-depth: 0
+          submodules: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
