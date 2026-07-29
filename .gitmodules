@@ -1,0 +1,12 @@
+[submodule "deps-redux"]
+	path = deps-redux
+	url = https://github.com/metabase/redux.git
+[submodule "deps-malli"]
+	path = deps-malli
+	url = https://github.com/metabase/malli.git
+[submodule "deps-pp"]
+	path = deps-pp
+	url = https://github.com/eerohele/pp.git
+[submodule "build-uber-log4j2-handler"]
+	path = build-uber-log4j2-handler
+	url = https://github.com/seancorfield/build-uber-log4j2-handler.git
